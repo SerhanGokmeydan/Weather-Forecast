@@ -6,17 +6,15 @@
     <link rel="stylesheet" href="/styles/main.css" />
   </head>
   <body>
-    <!-- <form id="city-form">
-      <label for="city">Şehir:</label>
-      <input type="text" id="city-input" name="city" required />
-      <button type="submit">Gönder</button>
-    </form> -->
     <form id="form">
       <label for="city"></label>
       <input type="text" name="city" id="city" required />
       <button type="submit">Gönder</button>
     </form>
     <div id="map"></div>
+    <div id="weather-records">
+      <ul></ul>
+    </div>
 
     <script src="/leaflet.js"></script>
     <script src="/axios.min.js"></script>
