@@ -7,14 +7,14 @@
   </head>
   <body>
     <form id="form">
-      <label for="city"></label>
-      <input type="text" name="city" id="city" required />
-      <button type="submit">Gönder</button>
+      <select name="countries" id="countries">
+        <option value="" selected disabled hidden>Please, select a country</option>
+      </select>
+      <select name="cities" id="cities">
+      </select>
     </form>
     <div id="map"></div>
-    <div id="weather-records">
-      <ul></ul>
-    </div>
+    <div id="weather-records"></div>
 
     <script src="/leaflet.js"></script>
     <script src="/axios.min.js"></script>
