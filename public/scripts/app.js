@@ -1,23 +1,26 @@
-const form = document.querySelector("#form");
 const geolocation = window.navigator.geolocation;
 const map = L.map("map");
 let marker;
-let currentCoords;
+
+const form = document.querySelector("#form");
 const countries = document.querySelector("#countries");
 const cities = document.querySelector("#cities");
+let previousCountryValue = "";
 
 //get current location
 geolocation.getCurrentPosition(async (e) => {
-  currentCoords = {
+  const currentCoords = {
     lat: e.coords.latitude,
     lon: e.coords.longitude,
   };
 
   //get the weather data for the current location
   try {
-    const data = await getApiData({ coords: currentCoords });
-    displayWeather(data.weather);
-    displayCountries(data.countriesList);
+    const weatherData = await getApiData("weather", { coords: currentCoords });
+    const placeData = await getApiData("place");
+
+    displayWeather(weatherData.weather);
+    displayCountries(placeData.countries);
 
     //set the map view to the current location
     map.setView([currentCoords.lat, currentCoords.lon], 13);
@@ -50,8 +53,8 @@ const onMapClick = async (e) => {
   map.panTo(e.latlng);
 
   try {
-    const data = await getApiData({ coords });
-    displayWeather(data.weather);
+    const weatherData = await getApiData("weather", { coords });
+    displayWeather(weatherData.weather);
   } catch (error) {
     console.log(error);
   }
@@ -66,42 +69,53 @@ cities.addEventListener("input", () => {
   form.dispatchEvent(new Event("submit"));
 });
 
+
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   try {
-    //get the weather data and location for the city
-    // const data = await getApiData({ location: countries.value});
-    // console.log(data.citiesList)
-    let data;
+    // get weather and locations datas
+    let weatherData;
+    let zoom;
     if (!cities.value) {
-      data = await getApiData({ location: countries.value });
+      weatherData = await getApiData("weather", { location: countries.value });
+      zoom = 6;
     } else {
-      data = await getApiData({
+      weatherData = await getApiData("weather", {
         location: countries.value + " " + cities.value,
       });
+      zoom = 10;
     }
-    displayCities(data.citiesList);
 
-    if (Object.entries(data.coords).length > 0) {
-      map.setView([data.coords.lat, data.coords.lon], 13);
-      marker
-        ? marker.setLatLng([data.coords.lat, data.coords.lon])
-        : (marker = L.marker([data.coords.lat, data.coords.lon]).addTo(map));
+    //make a post request for /api/place if the country value have changed
+    if (countries.value !== previousCountryValue) {
+      const placeData = await getApiData("place");
+      displayCities(placeData.cities);
 
-      displayWeather(data.weather);
-    } else {
-      console.log("City not found");
+      // keep the new country value
+      previousCountryValue = countries.value;
     }
+
+    // update map and marker
+    map.setView([weatherData.coords.lat, weatherData.coords.lon], zoom);
+    marker
+      ? marker.setLatLng([weatherData.coords.lat, weatherData.coords.lon])
+      : (marker = L.marker([
+          weatherData.coords.lat,
+          weatherData.coords.lon,
+        ]).addTo(map));
+
+    // display the weather records
+    displayWeather(weatherData.weather);
   } catch (error) {
     console.error(error);
   }
 });
 
 // get the api data
-const getApiData = async (data) => {
+const getApiData = async (endPoint, data) => {
   try {
-    const response = await axios.post("/app/api", data);
+    const response = await axios.post(`/api/${endPoint}`, data);
     const result = response.data;
     return result;
   } catch (error) {
@@ -123,6 +137,7 @@ const displayWeather = (data) => {
   `;
 };
 
+//display the countries dropdown menu
 const displayCountries = (data) => {
   const countriesList = document.querySelector("#countries");
   countriesList.innerHTML += `
@@ -134,7 +149,12 @@ const displayCountries = (data) => {
   `;
 };
 
+//display the cities dropdown menu
 const displayCities = (data) => {
+  if (!data || data.length === 0) {
+    return;
+  }
+
   const citiesSelect = document.querySelector("#cities");
   citiesSelect.innerHTML = `
       <option value="" selected disabled hidden>Please, select a city</option>
