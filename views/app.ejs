@@ -6,15 +6,33 @@
     <link rel="stylesheet" href="/styles/main.css" />
   </head>
   <body>
-    <form id="form">
-      <select name="countries" id="countries">
-        <option value="" selected disabled hidden>Please, select a country</option>
-      </select>
-      <select name="cities" id="cities">
+    <form id="countries-form">
+      <input type="text" id="countries-input" placeholder="Type a country name">
+      <select id="countries-select">
+        <option value="" selected disabled hidden>
+          Please, select a country
+        </option>
+        <% for( let country of countries) { %>
+        <option><%= country %></option>
+        <% } %>
       </select>
     </form>
+    <form id="states-form">
+      <input type="text" id="states-input" placeholder="Type a state name">
+      <select id="states-select"></select>
+    </form>
+    <form id="cities-form">
+      <input type="text" id="cities-input" placeholder="Type a city name">
+      <select id="cities-select"></select>
+    </form>
     <div id="map"></div>
-    <div id="weather-records"></div>
+    <div id="weather-records">
+      <div id="current-records">
+        
+      </div>
+      <div id="hourly-records"></div>
+      <div id="daily-records"></div>
+    </div>
 
     <script src="/leaflet.js"></script>
     <script src="/axios.min.js"></script>

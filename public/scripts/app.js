@@ -1,11 +1,22 @@
+//map
 const geolocation = window.navigator.geolocation;
 const map = L.map("map");
 let marker;
 
-const form = document.querySelector("#form");
-const countries = document.querySelector("#countries");
-const cities = document.querySelector("#cities");
-let previousCountryValue = "";
+//forms
+const countriesForm = document.querySelector("#countries-form");
+const statesForm = document.querySelector("#states-form");
+const citiesForm = document.querySelector("#cities-form");
+
+//inputs
+const countriesInput = document.querySelector("#countries-input");
+const statesInput = document.querySelector("#states-input");
+const citiesInput = document.querySelector("#cities-input");
+
+//selectors
+const countriesSelect = document.querySelector("#countries-select");
+const statesSelect = document.querySelector("#states-select");
+const citiesSelect = document.querySelector("#cities-select");
 
 //get current location
 geolocation.getCurrentPosition(async (e) => {
@@ -16,11 +27,9 @@ geolocation.getCurrentPosition(async (e) => {
 
   //get the weather data for the current location
   try {
-    const weatherData = await getApiData("weather", { coords: currentCoords });
-    const placeData = await getApiData("place");
-
-    displayWeather(weatherData.weather);
-    displayCountries(placeData.countries);
+    const data = await getApiData("weather", { coords: currentCoords });
+    console.log(data.weather)
+    displayWeather(data.weather);
 
     //set the map view to the current location
     map.setView([currentCoords.lat, currentCoords.lon], 13);
@@ -33,16 +42,17 @@ geolocation.getCurrentPosition(async (e) => {
 });
 
 //add the OpenStreetMap tile layer to the map
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png?", {
+L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>',
+  subdomains: "abcd",
   maxZoom: 19,
   minZoom: 2,
-  attribution:
-    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
 }).addTo(map);
 
 //add a marker to the map when the user clicks on the map
-const onMapClick = async (e) => {
-  const coords = {
+map.on("click", async (e) => {
+  const clickedCoords = {
     lat: e.latlng.lat,
     lon: e.latlng.lng,
   };
@@ -53,60 +63,121 @@ const onMapClick = async (e) => {
   map.panTo(e.latlng);
 
   try {
-    const weatherData = await getApiData("weather", { coords });
-    displayWeather(weatherData.weather);
+    const data = await getApiData("weather", { coords: clickedCoords });
+    displayWeather(data.weather);
+
   } catch (error) {
     console.log(error);
   }
-};
-map.on("click", onMapClick);
-
-countries.addEventListener("input", () => {
-  form.dispatchEvent(new Event("submit"));
 });
 
-cities.addEventListener("input", () => {
-  form.dispatchEvent(new Event("submit"));
+//filter the countries by input value
+countriesInput.addEventListener("input", () => {
+  const filter = countriesInput.value.toLowerCase().trim();
+  const options = countriesSelect.options;
+  
+  for (let i = 0; i < options.length; i++){
+    const optionText = options[i].text.toLowerCase();
+    if (optionText.includes(filter)) {
+      options[i].style.display = "block";
+    } else {
+      options[i].style.display = "none";
+    }
+  }
+})
+
+//filter  the states by input value
+statesInput.addEventListener("input", () => {
+  const filter = statesInput.value.toLowerCase().trim();
+  const options = statesSelect.options;
+  
+  for (let i = 0; i < options.length; i++){
+    const optionText = options[i].text.toLowerCase();
+    if (optionText.includes(filter)) {
+      options[i].style.display = "block";
+    } else {
+      options[i].style.display = "none";
+    }
+  }
+})
+
+//filter the cities by input value
+citiesInput.addEventListener("input", () => {
+  const filter = citiesInput.value.toLowerCase().trim();
+  const options = citiesSelect.options;
+  
+  for (let i = 0; i < options.length; i++){
+    const optionText = options[i].text.toLowerCase();
+    if (optionText.includes(filter)) {
+      options[i].style.display = "block";
+    } else {
+      options[i].style.display = "none";
+    }
+  }
+})
+
+//direct the input listeners to the submit listeners
+countriesSelect.addEventListener("input", () => {
+  countriesForm.dispatchEvent(new Event("submit"));
+});
+
+statesSelect.addEventListener("input", () => {
+  statesForm.dispatchEvent(new Event("submit"));
+});
+
+citiesSelect.addEventListener("input", () => {
+  citiesForm.dispatchEvent(new Event("submit"));
+});
+
+//add event listeners to the forms
+countriesForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  //filters states name by countries name
+  try {
+    const data = await getApiData("states", {
+      country: countriesSelect.value,
+    });
+    displayStates(data);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 
-form.addEventListener("submit", async (e) => {
+statesForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  //filters cities name by states name
+  try {
+    const data = await getApiData("cities", {
+      state: statesSelect.value,
+    });
+
+    displayCities(data);
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+citiesForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   try {
-    // get weather and locations datas
-    let weatherData;
-    let zoom;
-    if (!cities.value) {
-      weatherData = await getApiData("weather", { location: countries.value });
-      zoom = 6;
-    } else {
-      weatherData = await getApiData("weather", {
-        location: countries.value + " " + cities.value,
-      });
-      zoom = 10;
-    }
-
-    //make a post request for /api/place if the country value have changed
-    if (countries.value !== previousCountryValue) {
-      const placeData = await getApiData("place");
-      displayCities(placeData.cities);
-
-      // keep the new country value
-      previousCountryValue = countries.value;
-    }
+    const data = await getApiData("weather", {
+      country: countriesSelect.value,
+      state: statesSelect.value,
+      city: citiesSelect.value,
+    });
 
     // update map and marker
-    map.setView([weatherData.coords.lat, weatherData.coords.lon], zoom);
+    map.setView([data.coords.lat, data.coords.lon], 10);
     marker
-      ? marker.setLatLng([weatherData.coords.lat, weatherData.coords.lon])
-      : (marker = L.marker([
-          weatherData.coords.lat,
-          weatherData.coords.lon,
-        ]).addTo(map));
+      ? marker.setLatLng([data.coords.lat, data.coords.lon])
+      : (marker = L.marker([data.coords.lat, data.coords.lon]).addTo(map));
 
     // display the weather records
-    displayWeather(weatherData.weather);
+    displayWeather(data.weather);
   } catch (error) {
     console.error(error);
   }
@@ -123,9 +194,10 @@ const getApiData = async (endPoint, data) => {
   }
 };
 
-//display the weather data for the city
+//display the weather data for the state
 const displayWeather = (data) => {
   const weatherRecords = document.querySelector("#weather-records");
+
   weatherRecords.innerHTML = `
     <ul id="weather-records-list">
       ${Object.keys(data)
@@ -137,29 +209,22 @@ const displayWeather = (data) => {
   `;
 };
 
-//display the countries dropdown menu
-const displayCountries = (data) => {
-  const countriesList = document.querySelector("#countries");
-  countriesList.innerHTML += `
-    ${data.map((countryInfo) => {
-      return `<option ${`value = ${countryInfo.country}`}>${
-        countryInfo.country
-      }</option>`;
-    })}
+//display the states select dropdown menu
+const displayStates = (data) => {
+  statesSelect.innerHTML = `
+  <option value="" selected disabled hidden>Please, select a state</option>
+  ${data.map((state) => {
+        return `<option>${state.name}</option>`;
+      })}
   `;
 };
 
-//display the cities dropdown menu
+//display the cities select dropdown menu
 const displayCities = (data) => {
-  if (!data || data.length === 0) {
-    return;
-  }
-
-  const citiesSelect = document.querySelector("#cities");
   citiesSelect.innerHTML = `
-      <option value="" selected disabled hidden>Please, select a city</option>
+  <option value="" selected disabled hidden>Please, select a city</option>
       ${data.map((city) => {
-        return `<option ${`value = ${city}`}>${city}</option>`;
+        return `<option>${city.name}</option>`;
       })}
   `;
 };
