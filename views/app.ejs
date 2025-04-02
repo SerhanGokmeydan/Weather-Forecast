@@ -6,30 +6,85 @@
     <link rel="stylesheet" href="/styles/main.css" />
   </head>
   <body>
-    <form id="countries-form">
-      <input type="text" id="countries-input" placeholder="Type a country name">
-      <select id="countries-select">
-        <option value="" selected disabled hidden>
-          Please, select a country
-        </option>
-        <% for( let country of countries) { %>
-        <option><%= country %></option>
-        <% } %>
-      </select>
-    </form>
-    <form id="states-form">
-      <input type="text" id="states-input" placeholder="Type a state name">
-      <select id="states-select"></select>
-    </form>
-    <form id="cities-form">
-      <input type="text" id="cities-input" placeholder="Type a city name">
-      <select id="cities-select"></select>
-    </form>
+    <div class="container">
+      <!-- countries dropdown menu -->
+      <div id="countries-dropdown" class="dropdown-menu">
+        <div class="selected-item">
+          <input type="text" placeholder="Select a country" readonly />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+            <path
+              d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"
+            />
+          </svg>
+        </div>
+        <div class="dropdown-content">
+          <div class="search-input">
+            <input
+              type="text"
+              id="countries-input"
+              placeholder="Type to filter countries"
+            />
+          </div>
+          <ul class="dropdown-list">
+            <% for( let country of countries) { %>
+            <li><%= country %></li>
+            <% } %>
+          </ul>
+        </div>
+      </div>
+
+      <!-- states dropdown menu -->
+      <div id="states-dropdown" class="dropdown-menu">
+        <div class="selected-item">
+          <input type="text" placeholder="Select a state" readonly />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+            <path
+              d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"
+            />
+          </svg>
+        </div>
+        <div class="dropdown-content">
+          <div class="search-input">
+            <input
+              type="text"
+              id="states-input"
+              placeholder="Type to filter states"
+            />
+          </div>
+          <ul class="dropdown-list">
+          </ul>
+        </div>
+      </div>
+
+      <!-- cities dropdown menu -->
+      <div id="cities-dropdown" class="dropdown-menu">
+        <div class="selected-item">
+          <input type="text" placeholder="Select a city" readonly />
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
+            <!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.-->
+            <path
+              d="M137.4 374.6c12.5 12.5 32.8 12.5 45.3 0l128-128c9.2-9.2 11.9-22.9 6.9-34.9s-16.6-19.8-29.6-19.8L32 192c-12.9 0-24.6 7.8-29.6 19.8s-2.2 25.7 6.9 34.9l128 128z"
+            />
+          </svg>
+        </div>
+        <div class="dropdown-content">
+          <div class="search-input">
+            <input
+              type="text"
+              id="cities-input"
+              placeholder="Type to filter countries"
+            />
+          </div>
+          <ul class="dropdown-list">
+          </ul>
+        </div>
+      </div>
+    </div>
     <div id="map"></div>
     <div id="weather-records">
-      <div id="current-records">
-        
-      </div>
+      <div id="current-records"></div>
       <div id="hourly-records"></div>
       <div id="daily-records"></div>
     </div>
