@@ -290,11 +290,13 @@ const displayWeather = (data) => {
   //display current temp
   const temperature = document.querySelector("#temperature");
   temperature.innerHTML = `${data.weather.current.temperature_2m}${data.weather.current_units.temperature_2m}`;
+  
+  const currentIcon = data.weather.current.is_day ? data.weather.icons[data.weather.current.weather_code].day : data.weather.icons[data.weather.current.weather_code].night;
 
   const weatherIcon = document.querySelector("#weather-icon");
   weatherIcon.setAttribute(
     "src",
-    data.weather.icons[data.weather.current.weather_code].day.image
+    currentIcon.image
   );
 
   //display a day's hourly temp
@@ -304,11 +306,11 @@ const displayWeather = (data) => {
       .map((time, index) => {
         if (time.slice(8, 10) == new Date().getDate()) {
           const weatherCode = data.weather.hourly.weather_code[index];
-          const icon = data.weather.icons[weatherCode].day.image;
+          const icon =  data.weather.hourly.is_day[index] ? data.weather.icons[weatherCode].day : data.weather.icons[weatherCode].night;
 
           return `<li>
           <p>${data.weather.hourly.time[index].slice(-5)}</p>
-          <img src="${icon}" alt="Weather Icon">
+          <img src="${icon.image}" alt="Weather Icon">
           <p>${data.weather.hourly.temperature_2m[index]}${
             data.weather.hourly_units.temperature_2m
           }</p>

@@ -47,7 +47,7 @@ app.post("/api/weather", async (req, res) => {
 
     //get the weather data
     const weatherResponse = await axios.get(
-      `https://api.open-meteo.com/v1/forecast?latitude=${mapData.lat}&longitude=${mapData.lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,rain,cloud_cover,wind_direction_10m,apparent_temperature,showers,pressure_msl,is_day,snowfall,surface_pressure,precipitation&daily=weather_code,sunshine_duration,uv_index_max,rain_sum,sunrise,sunset,daylight_duration,snowfall_sum,showers_sum,precipitation_sum,temperature_2m_max,temperature_2m_min&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,rain,showers,snowfall,snow_depth,weather_code,surface_pressure,visibility,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation&timezone=GMT`
+      `https://api.open-meteo.com/v1/forecast?latitude=${mapData.lat}&longitude=${mapData.lon}&current=is_day,temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m,rain,cloud_cover,wind_direction_10m,apparent_temperature,showers,pressure_msl,is_day,snowfall,surface_pressure,precipitation&daily=weather_code,sunshine_duration,uv_index_max,rain_sum,sunrise,sunset,daylight_duration,snowfall_sum,showers_sum,precipitation_sum,temperature_2m_max,temperature_2m_min&hourly=is_day,temperature_2m,relative_humidity_2m,dew_point_2m,apparent_temperature,rain,showers,snowfall,snow_depth,weather_code,surface_pressure,visibility,wind_speed_10m,wind_direction_10m,cloud_cover,precipitation&timezone=GMT`
     );
     const weatherData = weatherResponse.data;
 
