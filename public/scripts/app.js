@@ -12,14 +12,25 @@ const dropdownLists = document.querySelectorAll(".dropdown-list");
 const dropdownInputs = document.querySelectorAll(".selected-item input");
 const searchInputs = document.querySelectorAll(".search-input input");
 
+const showLoading = () => {
+  document.querySelector("#loading-screen").style.display = "flex";
+};
+
+const hideLoading = () => {
+  document.querySelector("#loading-screen").style.display = "none";
+};
+
 // get the api data
 const getApiData = async (endPoint, data) => {
+  showLoading();
   try {
     const response = await axios.post(`/api/${endPoint}`, data);
     const result = response.data;
     return result;
   } catch (error) {
     console.log(error);
+  } finally {
+    hideLoading();
   }
 };
 
