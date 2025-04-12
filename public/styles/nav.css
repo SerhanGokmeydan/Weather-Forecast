@@ -1,0 +1,26 @@
+nav{
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  grid-area: 1/1/-1/2;
+  background-color: #202a3bff;
+  padding: 20px;
+  border-radius: 10px;
+}
+nav svg{
+  width: 2.5rem;
+  fill: rgb(170, 170, 170);
+  margin-bottom: 5px;
+}
+
+nav #app-icon{
+  margin-bottom: 75px;
+
+}
+
+nav a{
+  margin-bottom: 25px;
+  text-align: center;
+  cursor: pointer;
+}
