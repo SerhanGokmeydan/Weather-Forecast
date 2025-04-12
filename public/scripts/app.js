@@ -22,7 +22,6 @@ const hideLoading = () => {
 
 // get the api data
 const getApiData = async (endPoint, data) => {
-  showLoading();
   try {
     const response = await axios.post(`/api/${endPoint}`, data);
     const result = response.data;
@@ -30,11 +29,11 @@ const getApiData = async (endPoint, data) => {
   } catch (error) {
     console.log(error);
   } finally {
-    hideLoading();
   }
 };
 
 //get current location
+showLoading();
 geolocation.getCurrentPosition(async (e) => {
   const currentCoords = {
     lat: e.coords.latitude,
@@ -58,6 +57,8 @@ geolocation.getCurrentPosition(async (e) => {
 
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoading();
   }
 });
 
@@ -81,6 +82,7 @@ L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
 
 //add a marker to the map when the user clicks on the map
 map.on("click", async (e) => {
+  showLoading();
   const clickedCoords = {
     lat: e.latlng.lat,
     lon: e.latlng.lng,
@@ -109,6 +111,8 @@ map.on("click", async (e) => {
 
   } catch (error) {
     console.log(error);
+  } finally {
+    hideLoading();
   }
 });
 
@@ -123,6 +127,7 @@ const getWeatherData = async () => {
 setInterval(getWeatherData, 100 * 60 * 5) // 5 minutes
 
 const weatherApi = async () => {
+  showLoading();
   try {
     const data = await getApiData("weather", {
       country: dropdownInputs[0].value, //country input
@@ -142,6 +147,8 @@ const weatherApi = async () => {
 
   } catch (error) {
     console.error(error);
+  } finally {
+    hideLoading();
   }
 };
 
